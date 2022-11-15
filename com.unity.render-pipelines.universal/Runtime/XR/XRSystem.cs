@@ -191,11 +191,13 @@ namespace UnityEngine.Rendering.Universal
             {
                 // Disable vsync on the main display when rendering to a XR device
                 // XRTODO: Quest provider has a bug where vSyncCount must be 1, otherwise app is locked to 30fps
-                if (Application.platform == RuntimePlatform.Android)
+                /*if (Application.platform == RuntimePlatform.Android)
                     QualitySettings.vSyncCount = 1;
                 else
-                    QualitySettings.vSyncCount = 0;
+                    QualitySettings.vSyncCount = 0;*/
 
+                QualitySettings.vSyncCount = 0;
+                Application.targetFrameRate = 300;
                 CreateLayoutFromXrSdk(camera, singlePassAllowed: true);
             }
             else
@@ -245,7 +247,7 @@ namespace UnityEngine.Rendering.Universal
             return false;
         }
 
-        // Used for updating URP cameraData data struct with XRPass data. 
+        // Used for updating URP cameraData data struct with XRPass data.
         internal void UpdateCameraData(ref CameraData baseCameraData, in XRPass xr)
         {
             // Update cameraData viewport for XR
