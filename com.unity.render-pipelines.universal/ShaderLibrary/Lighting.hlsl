@@ -392,7 +392,7 @@ half3 EnvironmentBRDFClearCoat(BRDFData brdfData, half clearCoatMask, half3 indi
 // NOTE: needs to be multiplied with reflectance f0, i.e. specular color to complete
 half DirectBRDFSpecular(BRDFData brdfData, half3 normalWS, half3 lightDirectionWS, half3 viewDirectionWS)
 {
-    float3 halfDir = SafeNormalize(float3(lightDirectionWS) + float3(viewDirectionWS));
+    float3 halfDir = SafeNormalizeFloat(float3(lightDirectionWS) + float3(viewDirectionWS));
 
     float NoH = saturate(dot(normalWS, halfDir));
     half LoH = saturate(dot(lightDirectionWS, halfDir));
