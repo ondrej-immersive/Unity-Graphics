@@ -169,7 +169,7 @@ namespace UnityEngine.Rendering.Universal
             // Always create this pass even in deferred because we use it for wireframe rendering in the Editor or offscreen depth texture rendering.
             m_RenderOpaqueForwardPass = new DrawObjectsPass(URPProfileId.DrawOpaqueObjects, true, RenderPassEvent.BeforeRenderingOpaques, RenderQueueRange.opaque, data.opaqueLayerMask, m_DefaultStencilState, stencilData.stencilReference);
 
-            m_CopyDepthPass = new CopyDepthPass(RenderPassEvent.AfterRenderingSkybox, m_CopyDepthMaterial);
+           // m_CopyDepthPass = new CopyDepthPass(RenderPassEvent.AfterRenderingSkybox, m_CopyDepthMaterial);
             m_DrawSkyboxPass = new DrawSkyboxPass(RenderPassEvent.BeforeRenderingSkybox);
             m_CopyColorPass = new CopyColorPass(RenderPassEvent.AfterRenderingSkybox, m_SamplingMaterial, m_BlitMaterial);
 #if ADAPTIVE_PERFORMANCE_2_1_0_OR_NEWER
@@ -281,6 +281,7 @@ namespace UnityEngine.Rendering.Universal
             isRunningHololens = UniversalRenderPipeline.IsRunningHololens(cameraData);
 #endif
             var createColorTexture = (rendererFeatures.Count != 0 && !isRunningHololens) && !isPreviewCamera;
+            createColorTexture = false;
             if (createColorTexture)
             {
                 m_ActiveCameraColorAttachment = m_CameraColorAttachment;
@@ -298,13 +299,13 @@ namespace UnityEngine.Rendering.Universal
             RenderPassInputSummary renderPassInputs = GetRenderPassInputs(ref renderingData);
 
             // Should apply post-processing after rendering this camera?
-            bool applyPostProcessing = cameraData.postProcessEnabled;
+            bool applyPostProcessing = false;
 
             // There's at least a camera in the camera stack that applies post-processing
-            bool anyPostProcessing = renderingData.postProcessingEnabled;
+            bool anyPostProcessing = false;
 
             // TODO: We could cache and generate the LUT before rendering the stack
-            bool generateColorGradingLUT = cameraData.postProcessEnabled;
+            //bool generateColorGradingLUT = cameraData.postProcessEnabled;
             bool isSceneViewCamera = cameraData.isSceneViewCamera;
             bool requiresDepthTexture = cameraData.requiresDepthTexture || renderPassInputs.requiresDepthTexture || this.actualRenderingMode == RenderingMode.Deferred;
 
@@ -342,6 +343,7 @@ namespace UnityEngine.Rendering.Universal
             createDepthTexture |= (cameraData.renderType == CameraRenderType.Base && !cameraData.resolveFinalTarget);
             // Deferred renderer always need to access depth buffer.
             createDepthTexture |= this.actualRenderingMode == RenderingMode.Deferred;
+            createDepthTexture = false;
 #if ENABLE_VR && ENABLE_XR_MODULE
             if (cameraData.xr.enabled)
             {
@@ -418,11 +420,11 @@ namespace UnityEngine.Rendering.Universal
                 }
             }
 
-            if (generateColorGradingLUT)
+           /* if (generateColorGradingLUT)
             {
                 m_ColorGradingLutPass.Setup(m_ColorGradingLut);
                 EnqueuePass(m_ColorGradingLutPass);
-            }
+            }*/
 
 #if ENABLE_VR && ENABLE_XR_MODULE
             if (cameraData.xr.hasValidOcclusionMesh)
@@ -519,11 +521,11 @@ namespace UnityEngine.Rendering.Universal
                 var sourceForFinalPass = (applyPostProcessing) ? m_AfterPostProcessColor : m_ActiveCameraColorAttachment;
 
                 // Do FXAA or any other final post-processing effect that might need to run after AA.
-                if (applyFinalPostProcessing)
+               /* if (applyFinalPostProcessing)
                 {
                     m_FinalPostProcessPass.SetupFinalPass(sourceForFinalPass);
                     EnqueuePass(m_FinalPostProcessPass);
-                }
+                }*/
 
                 if (renderingData.cameraData.captureActions != null)
                 {
@@ -562,11 +564,11 @@ namespace UnityEngine.Rendering.Universal
             }
 
             // stay in RT so we resume rendering on stack after post-processing
-            else if (applyPostProcessing)
+            /*else if (applyPostProcessing)
             {
                 m_PostProcessPass.Setup(cameraTargetDescriptor, m_ActiveCameraColorAttachment, m_AfterPostProcessColor, m_ActiveCameraDepthAttachment, m_ColorGradingLut, false, false);
                 EnqueuePass(m_PostProcessPass);
-            }
+            }*/
 
 #if UNITY_EDITOR
             if (isSceneViewCamera)
